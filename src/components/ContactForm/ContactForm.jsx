@@ -1,64 +1,94 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { ContactForm, FormField, Button, Input } from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { Formik } from 'formik';
+import * as yup from 'yup';
+import 'yup-phone';
 
-const Form = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toastifyOptions } from 'utils/toastifyOptions';
 
-  const handleChange = event => {
-    const { name, value } = event.target;
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'number') {
-      setNumber(value);
+import { addContact } from 'Redux/contacts/contactsSlice';
+import { getContacts } from 'Redux/contacts/contactsSelectors';
+
+import {
+  Form,
+  FormField,
+  FieldFormik,
+  ErrorMessage,
+  Button,
+  LabelWrapper,
+  LabelSpan,
+} from './ContactForm.styled';
+
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .trim()
+    .matches(
+      /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
+      'Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d`Artagnan'
+    )
+    .required(),
+  number: yup.string().required(),
+});
+
+const initialValues = { name: '', number: '' };
+
+export const ContactForm = () => {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+  const isDublicate = ({ name, number }) => {
+    const normalizedName = name.toLowerCase().trim();
+    const normalizedNumber = number.trim();
+    const dublicate = contacts.find(
+      contact =>
+        contact.name.toLowerCase().trim() === normalizedName ||
+        contact.number.trim() === normalizedNumber
+    );
+    return Boolean(dublicate);
+  };
+
+  const onAddContact = ({ name, number }) => {
+    if (isDublicate({ name, number })) {
+      return toast.error(
+        `This contact is already in contacts`,
+        toastifyOptions
+      );
     }
+    dispatch(addContact({ name, number }));
+    // const action = addContact({ name, number });
+    // dispatch(action);
   };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-    onSubmit({ name, number });
-    reset();
-  };
-
-  const reset = () => {
-    setName('');
-    setNumber('');
-  };
-
   return (
-    <ContactForm onSubmit={handleSubmit}>
-      <FormField>
-        Name
-        <Input
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-          value={name}
-          onChange={handleChange}
-        />
-      </FormField>
-      <FormField>
-        Number
-        <Input
-          type="tel"
-          name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          value={number}
-          onChange={handleChange}
-        />
-      </FormField>
-      <Button type="submit">Add contact</Button>
-    </ContactForm>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values, { resetForm }) => {
+        onAddContact({ ...values });
+        resetForm();
+      }}
+      validationSchema={schema}
+    >
+      <Form autoComplete="off">
+        <FormField>
+          <LabelWrapper>
+            <LabelSpan>Name</LabelSpan>
+          </LabelWrapper>
+          <FieldFormik type="text" name="name" placeholder="Name" />
+          <ErrorMessage name="name" component="span" />
+        </FormField>
+        <FormField>
+          <LabelWrapper>
+            <LabelSpan>Number</LabelSpan>
+          </LabelWrapper>
+          <FieldFormik
+            type="tel"
+            name="number"
+            placeholder="+38-095-271-10-00"
+          />
+          <ErrorMessage name="number" component="span" />
+        </FormField>
+        <Button type="submit">Add contact</Button>
+      </Form>
+    </Formik>
   );
 };
-
-Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
-
-export default Form;

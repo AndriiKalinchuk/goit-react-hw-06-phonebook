@@ -1,70 +1,35 @@
-import { useState } from 'react';
-import ContactForm from './ContactForm/ContactForm';
-import ContactList from './ContactList/ContactList';
+import { useSelector } from 'react-redux';
+// toastify
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// components
+
+import { Layout } from './Layout/Layout';
+import { Section } from './Section/Section';
+import { Title } from './Title/Title';
 import Filter from './Filter/Filter';
+import { ContactForm } from './ContactForm/ContactForm';
+import { ContactList } from './ContactList/ContactList';
 
-import { nanoid } from 'nanoid';
+// redux
+import { getContacts } from 'Redux/contacts/contactsSelectors';
 
-import defaultContacts from '../data/defaultcontacts.json';
-import useLocalStorage from '../hooks/useLocalStorage';
-
-const App = () => {
-  const [contacts, setContacts] = useLocalStorage('contacts', defaultContacts);
-  const [filter, setFilter] = useState('');
-
-  const formSubmitHandler = data => {
-    const newContact = {
-      id: nanoid(),
-      name: data.name.trim(),
-      number: data.number.trim(),
-    };
-
-    if (isContactExists(newContact.name)) {
-      alert(`${newContact.name} is already in contacts.`);
-      return;
-    }
-
-    setContacts(prevContacts => [...prevContacts, newContact]);
-  };
-
-  const isContactExists = name => {
-    return contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-  };
-
-  const deleteContact = id => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== id)
-    );
-  };
-
-  const changeFilter = e => {
-    setFilter(e.target.value);
-  };
-
-  const getFilteredContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-
-  const filteredContacts = getFilteredContacts();
-
+export const App = () => {
+  const contacts = useSelector(getContacts);
   return (
-    <div>
-      <h1>Phonebook</h1>
-      <ContactForm onSubmit={formSubmitHandler} />
-
-      <h2>Contacts</h2>
-      <Filter value={filter} onChange={changeFilter} />
-      <ContactList
-        contacts={filteredContacts}
-        onDeleteContact={deleteContact}
-      />
-    </div>
+    <Layout>
+      <Section title="PhoneBook">
+        <ContactForm />
+        {contacts.length > 0 && (
+          <>
+            <Title title="Contacts" />
+            <Filter />
+            <ContactList />
+          </>
+        )}
+      </Section>
+      <ToastContainer />
+    </Layout>
   );
 };
-
-export default App;
