@@ -1,5 +1,3 @@
-// If using Redux-Persist, you should specifically ignore all the action types it dispatches
-// https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data
 import { configureStore } from '@reduxjs/toolkit';
 import {
   persistStore,
@@ -11,16 +9,14 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import storage from 'redux-persist/lib/storage';
 
 import { rootReducer } from './rootReducer';
 
-// об'єкт налаштувань, в якому записані, які дані зберігати в Local Storage
 const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['contacts'],
-  // blacklist: ["filter"]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -35,5 +31,4 @@ export const store = configureStore({
     }),
 });
 
-// дані з локал сторіджа потрапляли відразу в redux під час завантаження
 export const persistor = persistStore(store);

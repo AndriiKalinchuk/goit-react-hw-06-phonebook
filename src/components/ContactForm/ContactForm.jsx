@@ -56,8 +56,6 @@ export const ContactForm = () => {
       );
     }
     dispatch(addContact({ name, number }));
-    // const action = addContact({ name, number });
-    // dispatch(action);
   };
   return (
     <Formik
@@ -83,7 +81,7 @@ export const ContactForm = () => {
           <FieldFormik
             type="tel"
             name="number"
-            placeholder="+38-095-271-10-00"
+            placeholder="+380 95 271 1000"
           />
           <ErrorMessage name="number" component="span" />
         </FormField>

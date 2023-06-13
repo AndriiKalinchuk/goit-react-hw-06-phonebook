@@ -5,12 +5,12 @@ export const Form = styled(FormikForm)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 16px;
   padding: 12px;
 
   max-width: 100%;
-  width: 500px;
+  width: 600px;
 `;
 
 export const FormField = styled.label`
@@ -21,7 +21,7 @@ export const FormField = styled.label`
   max-width: 100%;
   width: 500px;
 
-  color: #0e0e39;
+  color: #080842;
   font-size: 20px;
 `;
 
@@ -89,8 +89,7 @@ export const ErrorMessage = styled(FormikError)`
   padding-right: 16px;
 
   max-width: 500px;
-  color: #9e0202;
-  text-shadow: 0 0.4px 0.4px #fff;
+  color: #8c0606;
   background-color: transparent;
   backdrop-filter: blur(10.5px);
   border-radius: 8px;

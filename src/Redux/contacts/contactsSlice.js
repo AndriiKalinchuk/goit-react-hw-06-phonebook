@@ -9,9 +9,7 @@ const contactsSlice = createSlice({
     addContact: {
       reducer: (state, { payload }) => {
         state.push(payload);
-        // return [...state, payload];
       },
-      // підготовча ф-ція
       prepare: data => {
         return {
           payload: {

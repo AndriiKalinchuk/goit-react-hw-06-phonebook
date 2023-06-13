@@ -7,10 +7,6 @@ export const ContactList = () => {
   const filteredContacts = useSelector(getFilteredContacts);
   const dispatch = useDispatch();
 
-  const onDeleteContact = contactId => {
-    dispatch(deleteContact(contactId));
-  };
-  console.log('filteredContacts ', filteredContacts);
   return (
     <List>
       {filteredContacts.map(({ name, number, id }) => {
@@ -18,7 +14,7 @@ export const ContactList = () => {
           <Item key={id}>
             <span>{name}:</span>
             <span>{number}</span>
-            <Button type="button" onClick={() => onDeleteContact(id)}>
+            <Button type="button" onClick={() => dispatch(deleteContact(id))}>
               Delete contact
             </Button>
           </Item>
